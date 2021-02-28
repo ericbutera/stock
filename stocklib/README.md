@@ -1,0 +1,1 @@
+Stock core application. To be used within job queues, api's and whatever else.
