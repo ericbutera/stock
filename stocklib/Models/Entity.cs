@@ -1,6 +1,8 @@
-namespace api.Models {
+namespace stocklib.Models
+{
     /// <summary>Allow an entity to work with the reposity.</summary>
-    public abstract class RepoEntity {
+    public abstract class RepoEntity
+    {
         public virtual long Id { get; set; }
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Microsoft.EntityFrameworkCore;
-using api.Models;
-using api.Interfaces;
+using stocklib.Models;
+using stocklib.Interfaces;
 
 namespace api
 {
@@ -32,9 +32,7 @@ namespace api
             ConfigureCors(services);
             ConfigureDI(services);
 
-
-            services.AddDbContext<ApiContext>(opt =>
-                opt.UseSqlite(Configuration.GetConnectionString("sqlite")));
+            services.AddDbContext<StocklibContext>(opt => opt.UseSqlite(Configuration.GetConnectionString("sqlite")));
 
             services.AddControllers();
         }

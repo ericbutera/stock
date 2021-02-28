@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using api.Models;
+using stocklib.Models;
 
-namespace api.Interfaces {
-    public interface IRepository<T> where T : RepoEntity {
+namespace stocklib.Interfaces
+{
+    public interface IRepository<T> where T : RepoEntity
+    {
         /// <summary>Fetch all records</summary>
         Task<T> Get(long id);
 
@@ -15,7 +17,7 @@ namespace api.Interfaces {
 
         /// <summary>Update an entity</summary>
         Task Update(T entity);
-        
+
         /// <summary>Does the entity exist?</summary>
         Task<bool> Exists(long id);
     }

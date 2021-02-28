@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-using api.Models;
-using api.Interfaces;
+using stocklib.Models;
+using stocklib.Interfaces;
 
 namespace api.Controllers
 {
