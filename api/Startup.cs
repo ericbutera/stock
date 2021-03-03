@@ -17,7 +17,8 @@ namespace api
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string _developmentOrigin = "_developmentOrigin";
+        readonly string _prodOrigin = "_prodOrigin";
 
         public Startup(IConfiguration configuration)
         {
@@ -41,10 +42,12 @@ namespace api
         {
             services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins, builder =>
+                // development can be less restrictive
+                options.AddPolicy(name: _developmentOrigin, builder =>
                 {
-                    // allow requests from UI
-                    builder.WithOrigins(Configuration["uiUrl"]);
+                    builder.WithOrigins(Configuration["uiUrl"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
                 });
             });
         }
@@ -62,16 +65,16 @@ namespace api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            var isDevelopment = env.IsDevelopment();
+
+            if (isDevelopment)
                 app.UseDeveloperExceptionPage();
-            }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(isDevelopment ? _developmentOrigin : _prodOrigin);
 
             app.UseAuthorization();
 
