@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import config from '../config.js';
 
+import config from '../config.js';
 import EditForm from './Tickers/EditForm.js';
 
 const Tickers = () => {
@@ -13,10 +13,9 @@ const Tickers = () => {
     // object.
     const [tickers, setTickers] = useState([]); // load tickers
     const [currentTicker, setCurrentTicker] = useState(initialFormState);
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = useState(false); // seems like this should be in the edit component?
 
     const add = ticker => {
-        debugger;
         //send to server
         setTickers([...tickers, ticker])
     };
@@ -40,18 +39,10 @@ const Tickers = () => {
             });
     };
 
-    const updateTicker = (id, ticker) => {
-        debugger;
-        setEditing(false);
-        setCurrentTicker({ id: ticker.id, name: ticker.name, symbol: ticker.symbol });
-        // send to server
-        debugger;
-    };
-
-    useEffect(() => {
-        // same as componentDidMount
+    useEffect(() => { // analog componentDidMount
+        console.log("calling loading tickers...");
         load();
-    });
+    }, []);
 
     return (
         <div>
@@ -70,11 +61,10 @@ const Tickers = () => {
             </div>
 
             <div>
-                <EditForm
-                    editing={editing}
-                    setEditing={setEditing}
-                    currentTicker={currentTicker}
-                    updateTicker={updateTicker} />
+                {editing &&
+                    <EditForm
+                        setEditing={setEditing}
+                        currentTicker={currentTicker} />}
             </div>
         </div>
     );
