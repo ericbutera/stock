@@ -5,27 +5,24 @@ import config from '../config.js';
 import EditForm from './Tickers/EditForm.js';
 
 const Tickers = () => {
-    const initialFormState = { id: null, name: '', symbol: '' };
+    const initialFormState = { name: '', symbol: '' };
 
-    // tinkering with https://github.com/taniarascia/react-hooks/blob/d2ebfa066db3f829ed4f3b9f38d5f72f17600b82/src/App.js
-    // using hooks seems to be an interesting approach. i like the functional aspect, but it is a little
-    // difficult to manage where all this data comes from. that's one benefit of using an entire state
-    // object.
     const [tickers, setTickers] = useState([]); // load tickers
-    const [currentTicker, setCurrentTicker] = useState(initialFormState);
-    const [editing, setEditing] = useState(false); // seems like this should be in the edit component?
-
-    const add = ticker => {
-        //send to server
-        setTickers([...tickers, ticker])
-    };
+    const [ticker, setTicker] = useState(initialFormState);
+    const [editing, showForm] = useState(false); // seems like this should be in the edit component?
 
     const edit = ticker => {
-        setEditing(true);
-        setCurrentTicker(ticker);
+        setTicker(ticker);
+        showForm(true);
     };
 
+    const add = () => {
+        setTicker({ ...initialFormState }); // clone
+        showForm(true);
+    }
+
     /**
+     * Fetch tickers from server
      * @returns {Promise}
      */
     const load = () => {
@@ -39,43 +36,48 @@ const Tickers = () => {
             });
     };
 
+    const onSave = () => {
+        load();
+    }
+
     useEffect(() => { // analog componentDidMount
-        console.log("calling loading tickers...");
         load();
     }, []);
 
     return (
-        <div>
-            <div>
-                <h2>Tickers</h2>
-                <ul>
+        <div className="container-fluid">
+            <h2>Tickers</h2>
+            <i className="bi bi-arrow-clockwise" onClick={load}></i>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Symbol</th>
+                        <th scope="col"><i className="bi bi-plus-circle" onClick={add}></i></th>
+                    </tr>
+                </thead>
+                <tbody>
                     {tickers.map(ticker =>
-                        <Ticker
-                            key={ticker.id}
-                            ticker={ticker}
-                            edit={edit} />)}
-                </ul>
-            </div>
-            <div>
-                <button onClick={load}>refresh</button>
-            </div>
+                        <tr key={ticker.id}>
+                            <td>{ticker.name}</td>
+                            <td>{ticker.symbol}</td>
+                            <td onClick={() => edit(ticker)}>
+                                <i className="bi bi-pen"></i>
+                            </td>
+                        </tr>)}
+                </tbody>
+            </table>
 
-            <div>
-                {editing &&
-                    <EditForm
-                        setEditing={setEditing}
-                        currentTicker={currentTicker} />}
-            </div>
+            <ul>
+            </ul>
+
+            {editing &&
+                <EditForm
+                    showForm={showForm}
+                    onSave={onSave}
+                    ticker={ticker} />}
         </div>
     );
 };
 
-function Ticker(props) {
-    return (
-        <li onClick={() => props.edit(props.ticker)}>
-            {props.ticker.name}
-        </li>
-    )
-}
-
-export default Tickers
+export default Tickers;

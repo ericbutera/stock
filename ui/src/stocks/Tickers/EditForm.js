@@ -4,18 +4,15 @@ import axios from 'axios';
 import config from '../../config.js';
 
 // mimic https://github.com/taniarascia/react-hooks/blob/d2ebfa066db3f829ed4f3b9f38d5f72f17600b82/src/forms/EditUserForm.js#L3
-
-// TODO edit form
-// - changing ticker discards edits and reverts to base state
 // - React docs on forms: https://reactjs.org/docs/forms.html#controlled-components
 // - Formik https://formik.org/docs/tutorial
 
 const EditForm = props => {
-    const [ticker, setTicker] = useState(props.currentTicker);
+    const [ticker, setTicker] = useState(props.ticker);
 
     useEffect(() => {
         // same as component did mount
-        setTicker(props.currentTicker);
+        setTicker(props.ticker);
     }, [props]);
 
     const handleInputChange = event => {
@@ -28,47 +25,49 @@ const EditForm = props => {
     const handleSubmit = event => {
         event.preventDefault();
         save(ticker);
-        props.setEditing(false);
+        props.showForm(false);
     };
 
     const saveSuccess = response => {
-        console.log("save response %", response);
-        // TODO - indicate refresh ticker list
-        debugger;
+        // theres probably a better way to refresh...
+        if (props.onSave)
+            props.onSave();
     }
 
     const save = ticker => {
-        if (ticker.id) {
+        if (ticker.id > 0) {
             axios.put(config.apiUrl + '/tickers/' + ticker.id, ticker)
                 .then(saveSuccess);
         } else {
-            axios.put(config.apiUrl + '/tickers/' + ticker.id, ticker)
-            axios.post(config.apiUrl + '/tickers')
+            axios.post(config.apiUrl + '/tickers', ticker)
                 .then(saveSuccess);
         }
     };
 
     const cancel = () => {
-        props.setEditing(false);
+        // todo confirm
+        props.showForm(false);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Name</label>
-                <input type="text" name="name" value={ticker.name} onChange={handleInputChange} />
-            </div>
-            <div>
-                <label>Symbol</label>
-                <input type="text" name="symbol" value={ticker.symbol} onChange={handleInputChange} />
-            </div>
-            <div>
-                <button>Update</button>
-            </div>
-            <div>
-                <input type="button" onClick={cancel} value="Cancel" />
-            </div>
-        </form>
+        <div>
+            <form onSubmit={handleSubmit}>
+                <div className="form-floating mb-3">
+                    <input className="form-control" type="text" id="txtName" name="name" placeholder="Name"
+                        value={ticker.name} onChange={handleInputChange} maxLength="50" required="required" />
+                    <label htmlFor="txtName">Name</label>
+                </div>
+                <div className="form-floating mb-3">
+                    <input className="form-control" type="text" id="txtSymbol" name="symbol" placeholder="Symbol"
+                        value={ticker.symbol} onChange={handleInputChange} maxLength="50" required="required" />
+                    <label htmlFor="txtSymbol">Symbol</label>
+                </div>
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button className="btn btn-outline-danger" type="button" onClick={cancel}>Cancel</button>
+                    <button className="btn btn-primary" type="submit">{ticker.id ? 'Update' : 'Create'}</button>
+                </div>
+            </form>
+        </div >
     );
 }
 
